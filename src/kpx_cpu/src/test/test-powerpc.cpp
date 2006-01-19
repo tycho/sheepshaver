@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.30 $)
+// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.31 $)
 
 #include <vector>
 #include <limits>
@@ -1995,7 +1995,7 @@ void powerpc_test_cpu::test_vector_arith(void)
 	// Code template
 	static uint32 code[] = {
 		POWERPC_MFSPR(12, 256),			// mfvrsave	r12
-		_D(15,0,0,0x1e00),				// lis		r0,0x9e00 ([v0;v3-v6])
+		_D(15,0,0,0x9e00),				// lis		r0,0x9e00 ([v0;v3-v6])
 		POWERPC_MTSPR(0, 256),			// mtvrsave	r0
 		POWERPC_LVX(RA, 0, RA),			// lvx		v4,r4(0)
 		POWERPC_LVX(RB, 0, RB),			// lvx		v5,r5(0)

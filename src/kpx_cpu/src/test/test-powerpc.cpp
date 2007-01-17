@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.32 $)
+// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.33 $)
 
 #include <vector>
 #include <limits>
@@ -258,7 +258,6 @@ void powerpc_cpu_base::init_decoder()
 	static const instr_info_t return_ii_table[] = {
 		{ "return",
 		  (execute_pmf)&powerpc_cpu_base::execute_return,
-		  NULL,
 		  PPC_I(MAX),
 		  D_form, 6, 0, CFLOW_JUMP
 		}

@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.34 $)
+// NOTE: Results file md5sum: 3e29432abb6e21e625a2eef8cf2f0840 ($Revision: 1.35 $)
 
 #include <vector>
 #include <limits>
@@ -235,6 +235,9 @@ struct powerpc_cpu_base
 };
 
 powerpc_cpu_base::powerpc_cpu_base()
+#ifndef SHEEPSHAVER
+	: powerpc_cpu(NULL)
+#endif
 {
 	init_decoder();
 }

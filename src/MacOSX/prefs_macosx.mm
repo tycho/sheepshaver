@@ -1,5 +1,5 @@
 /*
- *	$Id: prefs_macosx.mm,v 1.3 2010/01/02 19:24:24 asvitkine Exp $
+ *	$Id: prefs_macosx.mm,v 1.4 2010/01/02 22:08:51 asvitkine Exp $
  *
  *	prefs_macosx.mm - Enables access to SheepShaver preferences while
  *                    SheepShaver is running (on Mac OS X).
@@ -98,8 +98,11 @@
 
 void prefs_init(void)
 {
+	NSAutoreleasePool *pool;
 	NSMenu *appMenu;
 	NSMenuItem *menuItem;
+
+	pool = [[NSAutoreleasePool alloc] init];
 
 	appMenu = [[[NSApp mainMenu] itemAtIndex:0] submenu];
 	menuItem = [[NSMenuItem alloc] initWithTitle:@"Preferences..." action:@selector(openPreferences:) keyEquivalent:@","];
@@ -108,6 +111,8 @@ void prefs_init(void)
 	[menuItem release];
 	
 	[NSApp setDelegate:[[SheepShaverMain alloc] init]];
+
+	[pool release];
 }
 
 

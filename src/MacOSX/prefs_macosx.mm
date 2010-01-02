@@ -1,5 +1,5 @@
 /*
- *	$Id: prefs_macosx.mm,v 1.2 2009/08/18 18:22:01 asvitkine Exp $
+ *	$Id: prefs_macosx.mm,v 1.3 2010/01/02 19:24:24 asvitkine Exp $
  *
  *	prefs_macosx.mm - Enables access to SheepShaver preferences while
  *                    SheepShaver is running (on Mac OS X).
@@ -75,6 +75,8 @@
 
 - (void) openPreferences:(id)sender
 {
+	NSAutoreleasePool *pool;
+
 	if (nibObjects == nil) {
 		nibObjects = [self loadPrefsNibFile];
 		if (nibObjects == nil)
@@ -82,8 +84,10 @@
 		[nibObjects retain];
 	}
 
+	pool = [[NSAutoreleasePool alloc] init];
 	[[VMSettingsController sharedInstance] setupGUI];
 	[NSApp runModalForWindow:prefsWindow];
+	[pool release];
 }
 
 @end

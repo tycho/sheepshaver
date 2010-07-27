@@ -1,5 +1,5 @@
 /*
- *	$Id: prefs_macosx.mm,v 1.4 2010/01/02 22:08:51 asvitkine Exp $
+ *	$Id: prefs_macosx.mm,v 1.5 2010/07/27 02:55:09 asvitkine Exp $
  *
  *	prefs_macosx.mm - Enables access to SheepShaver preferences while
  *                    SheepShaver is running (on Mac OS X).
@@ -23,6 +23,9 @@
 
 
 #include "sysdeps.h"
+
+// The _UINT64 define is needed to guard against a typedef mismatch with Snow Leopard headers.
+#define _UINT64
 
 #include <Cocoa/Cocoa.h>
 #include "VMSettingsController.h"

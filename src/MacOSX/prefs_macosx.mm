@@ -1,5 +1,5 @@
 /*
- *	$Id: prefs_macosx.mm,v 1.5 2010/07/27 02:55:09 asvitkine Exp $
+ *	$Id: prefs_macosx.mm,v 1.6 2010/08/22 19:33:25 asvitkine Exp $
  *
  *	prefs_macosx.mm - Enables access to SheepShaver preferences while
  *                    SheepShaver is running (on Mac OS X).
@@ -30,9 +30,12 @@
 #include <Cocoa/Cocoa.h>
 #include "VMSettingsController.h"
 
+
 @interface SheepShaverMain : NSObject
+{
 	NSArray *nibObjects;
 	NSWindow *prefsWindow;
+}
 @end
 
 @implementation SheepShaverMain

@@ -1708,8 +1708,6 @@ void VideoExit(void)
 	if (x_display != NULL) {
 		XSync(x_display, false);
 		close_display();
-		XFlush(x_display);
-		XSync(x_display, false);
 	}
 
 #ifdef ENABLE_FBDEV_DGA

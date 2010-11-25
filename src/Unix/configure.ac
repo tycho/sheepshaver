@@ -6,6 +6,16 @@ AC_CONFIG_SRCDIR(main_unix.cpp)
 AC_PREREQ(2.52)
 AC_CONFIG_HEADER(config.h)
 
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AC_PROG_EGREP
+AC_PATH_PROGS(FILE, [file false])
+AC_PATH_PROG(PERL, [perl])
+
 dnl Canonical system information.
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -32,12 +42,10 @@ AC_ARG_ENABLE(standalone-gui,[  --enable-standalone-gui enable a standalone GUI 
 AC_ARG_WITH(esd,            [  --with-esd              support ESD for sound under Linux/FreeBSD [default=yes]], [WANT_ESD=$withval], [WANT_ESD=yes])
 AC_ARG_WITH(gtk,            [  --with-gtk              use GTK user interface [default=yes]],
   [case "$withval" in
-   gtk1)      WANT_GTK="gtk";;
-   gtk|gtk2)  WANT_GTK="$withval";;
-   yes)       WANT_GTK="gtk2 gtk";;
+   yes)       WANT_GTK="gtk2";;
    *)         WANT_GTK="no";;
    esac],
-  [WANT_GTK="gtk2 gtk"])
+  [WANT_GTK="gtk2"])
 AC_ARG_WITH(mon,            [  --with-mon              use mon as debugger [default=yes]], [WANT_MON=$withval], [WANT_MON=yes])
 AC_ARG_WITH(dgcc,           [  --with-dgcc=COMPILER    use C++ COMPILER to compile synthetic opcodes], [DYNGEN_CC=$withval])
 
@@ -65,16 +73,6 @@ AC_ARG_ENABLE(sdl-video,    [  --enable-sdl-video      use SDL for video graphic
 AC_ARG_ENABLE(sdl-audio,    [  --enable-sdl-audio      use SDL for audio [default=no]], [WANT_SDL_AUDIO=$enableval], [WANT_SDL_AUDIO=no])
 AC_ARG_ENABLE(sdl-framework,    [  --enable-sdl-framework  use SDL framework [default=no]], [WANT_SDL_FRAMEWORK=$enableval], [WANT_SDL_FRAMEWORK=no])
 AC_ARG_ENABLE(sdl-framework-prefix,    [  --enable-sdl-framework-prefix=PFX    default=/Library/Frameworks], [SDL_FRAMEWORK="$enableval"], [SDL_FRAMEWORK=/Library/Frameworks])
-
-dnl Checks for programs.
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_PROG_EGREP
-AC_PATH_PROGS(FILE, [file false])
-AC_PATH_PROG(PERL, [perl])
 
 dnl Check for PowerPC target CPU.
 HAVE_PPC=no
@@ -294,34 +292,16 @@ UISRCS=../dummy/prefs_editor_dummy.cpp
 case "x$WANT_GTK" in
 xgtk2*)
   WANT_GTK=no
-  AM_PATH_GTK_2_0(1.3.15, [
+  AM_PATH_GTK_2_0(2.16.0, [
     GUI_CFLAGS="$GTK_CFLAGS"
     GUI_LIBS="$GTK_LIBS"
     WANT_GTK=gtk2
   ], [
-    case "x${WANT_GTK}x" in
-    *gtkx)
-      AC_MSG_WARN([Could not find GTK+ 2.0, trying with GTK+ 1.2.])
-      WANT_GTK=gtk
-      ;;
-    *)
-      AC_MSG_WARN([Could not find GTK+, disabling user interface.])
-      WANT_GTK=no
-     ;;
-    esac
+    AC_MSG_WARN([Could not find GTK+, disabling user interface.])
+    WANT_GTK=no
   ])
   ;;
 esac
-if [[ "x$WANT_GTK" = "xgtk" ]]; then
-  WANT_GTK=no
-  AM_PATH_GTK(1.2.0, [
-    GUI_CFLAGS="$GTK_CFLAGS"
-    GUI_LIBS="$GTK_LIBS"
-    WANT_GTK=gtk
-  ], [
-    AC_MSG_WARN([Could not find GTK+, disabling user interface.])
-  ])
-fi
 if [[ "x$WANT_GTK" != "xno" -a "x$WANT_STANDALONE_GUI" = "xno" ]]; then
   AC_DEFINE(ENABLE_GTK, 1, [Define if using GTK.])
   UISRCS=prefs_editor_gtk.cpp

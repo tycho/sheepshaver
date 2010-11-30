@@ -73,7 +73,7 @@ SRCS = ../main.cpp main_windows.cpp ../prefs.cpp ../prefs_items.cpp prefs_window
     vm_alloc.cpp sigsegv.cpp posix_emu.cpp SheepShaver.rc \
 	$(CPUSRCS) $(ROUTERSRCS) $(SLIRP_OBJS)
 
-UI_SRCS = ../prefs.cpp prefs_windows.cpp prefs_editor_gtk.cpp xpram_windows.cpp \
+UI_SRCS = ../prefs.cpp ../dummy/prefs_dummy.cpp prefs_windows.cpp prefs_editor_gtk.cpp xpram_windows.cpp \
 	../prefs_items.cpp ../user_strings.cpp user_strings_windows.cpp util_windows.cpp \
 	b2ether/packet32.cpp SheepShaverGUI.rc
 

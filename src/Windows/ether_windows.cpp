@@ -22,6 +22,8 @@
 
 #include "sysdeps.h"
 
+#include <algorithm>
+
 #include <process.h>
 #include <windowsx.h>
 #include <winioctl.h>
@@ -175,10 +177,10 @@ static bool tap_set_status(LPADAPTER fd, ULONG status);
 static bool tap_get_mac(LPADAPTER fd, LPBYTE addr);
 static bool tap_receive_packet(LPADAPTER fd, LPPACKET lpPacket, BOOLEAN Sync);
 static bool tap_send_packet(LPADAPTER fd, LPPACKET lpPacket, BOOLEAN Sync, BOOLEAN recycle);
-static WINAPI unsigned int slirp_receive_func(void *arg);
-static WINAPI unsigned int ether_thread_feed_int(void *arg);
-static WINAPI unsigned int ether_thread_get_packets_nt(void *arg);
-static WINAPI unsigned int ether_thread_write_packets(void *arg);
+static unsigned int WINAPI slirp_receive_func(void *arg);
+static unsigned int WINAPI ether_thread_feed_int(void *arg);
+static unsigned int WINAPI ether_thread_get_packets_nt(void *arg);
+static unsigned int WINAPI ether_thread_write_packets(void *arg);
 static void init_queue(void);
 static void final_queue(void);
 static bool allocate_read_packets(void);
@@ -992,7 +994,7 @@ static LPPACKET get_write_packet( UINT len )
 	return Packet;
 }
 
-static unsigned int ether_thread_write_packets(void *arg)
+static unsigned int WINAPI ether_thread_write_packets(void *arg)
 {
 	LPPACKET Packet;
 
@@ -1052,7 +1054,7 @@ static BOOL write_packet( uint8 *packet, int len )
 		memcpy( Packet->Buffer, packet, len );
 
 		EnterCriticalSection( &fetch_csection );
-		pending_packet_sz[echo_count] = min(sizeof(pending_packet),len);
+		pending_packet_sz[echo_count] = std::min<int>(sizeof(pending_packet),len);
 		memcpy( pending_packet[echo_count], packet, pending_packet_sz[echo_count] );
 		echo_count = (echo_count+1) & (~(MAX_ECHO-1));
 		LeaveCriticalSection( &fetch_csection );
@@ -1366,7 +1368,7 @@ void slirp_output(const uint8 *packet, int len)
 	enqueue_packet(packet, len);
 }
 
-static unsigned int slirp_receive_func(void *arg)
+static unsigned int WINAPI slirp_receive_func(void *arg)
 {
 	D(bug("slirp_receive_func\n"));
 	thread_active_2 = true;
@@ -1424,7 +1426,7 @@ VOID CALLBACK packet_read_completion(
 	D(bug("packet_read_completion bytes=%d, error code=%d\n",dwNumberOfBytesTransfered,dwErrorCode));
 
 	if(thread_active && !dwErrorCode) {
-		int count = min(dwNumberOfBytesTransfered,1514);
+		int count = std::min<int>(dwNumberOfBytesTransfered,1514);
 		if(count) {
 			int j = echo_count;
 			for(int i=MAX_ECHO; i; i--) {
@@ -1508,7 +1510,7 @@ static void free_read_packets(void)
 	}
 }
 
-static unsigned int ether_thread_get_packets_nt(void *arg)
+static unsigned int WINAPI ether_thread_get_packets_nt(void *arg)
 {
 	static uint8 packet[1514];
 	int i, packet_sz = 0;
@@ -1565,7 +1567,7 @@ static unsigned int ether_thread_get_packets_nt(void *arg)
 	return 0;
 }
 
-static unsigned int ether_thread_feed_int(void *arg)
+static unsigned int WINAPI ether_thread_feed_int(void *arg)
 {
 	bool looping;
 

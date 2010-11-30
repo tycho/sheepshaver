@@ -77,7 +77,7 @@ extern bool ThunksInit(void);
 extern void ThunksExit(void);
 
 // Return the fake PowerPC opcode to handle specified native code
-#if EMULATED_PPC
+#ifdef EMULATED_PPC
 extern uint32 NativeOpcode(int selector);
 #endif
 

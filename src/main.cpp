@@ -232,7 +232,7 @@ bool InitAll(const char *vmdir)
 	WriteMacInt32(XLM_BUS_CLOCK, BusClockSpeed);					// For DriverServicesLib patch
 	WriteMacInt16(XLM_EXEC_RETURN_OPCODE, M68K_EXEC_RETURN);		// For Execute68k() (RTS from the executed 68k code will jump here and end 68k mode)
 	WriteMacInt32(XLM_ZERO_PAGE, SheepMem::ZeroPage());				// Pointer to read-only page with all bits set to 0
-#if !EMULATED_PPC
+#if !defined(EMULATED_PPC)
 #ifdef SYSTEM_CLOBBERS_R2
 	WriteMacInt32(XLM_TOC, (uint32)TOC);							// TOC pointer of emulator
 #endif

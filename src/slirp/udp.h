@@ -47,7 +47,7 @@ extern struct socket *udp_last_so;
  * Per RFC 768, September, 1981.
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct udphdr {
@@ -58,7 +58,7 @@ struct udphdr {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 /*

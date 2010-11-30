@@ -24,9 +24,9 @@
 #include "basic-plugin.hpp"
 
 // Forward declarations
-class task_struct;
+struct task_struct;
 class basic_kernel;
-class basic_cpu;
+struct basic_cpu;
 class program_info;
 
 // Base class for all task components

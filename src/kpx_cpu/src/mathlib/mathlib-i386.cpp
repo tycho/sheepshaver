@@ -24,6 +24,10 @@
 #define HAVE_TRUNC
 double trunc(double x)
 {
+#ifdef _MSC_VER
+	/* FIXME: This is probably semantically wrong, and it's slow. */
+	return (double)((long long)x);
+#else
 	volatile unsigned short int cw;
 	volatile unsigned short int cwtmp;
 	double value;
@@ -34,5 +38,11 @@ double trunc(double x)
 	__asm__ __volatile__("frndint" : "=t" (value) : "0" (x));
 	__asm__ __volatile__("fldcw %0" : : "m" (cw));
 	return value;
+#endif
+}
+
+float truncf(float x)
+{
+	return (float)trunc((float)x);
 }
 #endif

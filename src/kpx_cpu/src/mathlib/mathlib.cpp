@@ -88,6 +88,7 @@ int mathlib_fpclassify (double x)
 int mathlib_fpclassifyl(long double x)
 {
 	unimplemented("fpclassifyl");
+	return -1;
 }
 
 
@@ -114,6 +115,7 @@ int mathlib_signbit (double x)
 int mathlib_signbitl(long double x)
 {
 	unimplemented("signbitl");
+	return -1;
 }
 
 
@@ -191,7 +193,7 @@ long mathlib_lrint(double x)
 float mathlib_roundf(float x)
 {
 	int32 i0, j0;
-	static const float huge = 1.0e30;
+	static const float huge = 1.0e30f;
 
 	MATHLIB_GET_FLOAT_WORD (i0, x);
 	j0 = ((i0 >> 23) & 0xff) - 0x7f;

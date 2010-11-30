@@ -50,7 +50,7 @@
  *  Return the fake PowerPC opcode to handle specified native code
  */
 
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 uint32 NativeOpcode(int selector)
 {
 	uint32 opcode;
@@ -110,7 +110,7 @@ uint32 NativeOpcode(int selector)
  *  Generate PowerPC thunks for GetResource() replacements
  */
 
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 static uint32 get_resource_func;
 static uint32 get_1_resource_func;
 static uint32 get_ind_resource_func;
@@ -260,7 +260,7 @@ static native_op_t native_op[NATIVE_OP_MAX];
 
 bool ThunksInit(void)
 {
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	for (int i = 0; i < NATIVE_OP_MAX; i++) {
 		uintptr base = SheepMem::Reserve(16);
 		WriteMacInt32(base + 0, base + 8);

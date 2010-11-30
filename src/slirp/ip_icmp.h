@@ -48,7 +48,7 @@ typedef u_int32_t n_time;
  * Structure of an icmp header.
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct icmp {
@@ -99,7 +99,7 @@ struct icmp {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 /*

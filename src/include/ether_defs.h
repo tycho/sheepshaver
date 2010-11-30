@@ -27,7 +27,7 @@
 #define PACKED__
 #elif defined __GNUC__
 #define PACKED__ __attribute__ ((packed))
-#elif defined __sgi
+#elif defined(__sgi) || defined(_MSC_VER)
 #define PRAGMA_PACK_SUPPORTED 1
 #define PACKED__
 #else
@@ -518,7 +518,7 @@ union DL_primitives {
 #endif
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push,1)
 #endif
 
 // Packet headers
@@ -553,7 +553,7 @@ struct T8022AddressStruct {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 #ifdef PRAGMA_ALIGN_SUPPORTED

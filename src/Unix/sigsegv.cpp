@@ -35,6 +35,8 @@
 #include "config.h"
 #endif
 
+#include "sysdeps.h"
+
 #include <list>
 #include <stdio.h>
 #include <signal.h>
@@ -3056,7 +3058,9 @@ static bool sigsegv_do_install_handler(sigsegv_fault_handler_t handler)
 {
 	static bool main_exception_filter_installed = false;
 	if (!main_exception_filter_installed) {
+#ifndef _MSC_VER
 		do_install_main_exception_filter();
+#endif
 		main_exception_filter_installed = true;
 	}
 	sigsegv_fault_handler = handler;

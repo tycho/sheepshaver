@@ -27,7 +27,7 @@ AC_ARG_WITH(gtk,          [  --with-gtk              use GTK user interface [def
 
 dnl We use GTK+ if possible.
 if [[ "x$WANT_GTK" = "xyes" ]]; then
-  AM_PATH_GTK_2_0(1.3.15, [], [
+  AM_PATH_GTK_2_0(2.16.0, [], [
     AC_MSG_WARN([Could not find GTK+ 2.0, disabling user interface.])
     WANT_GTK=no
   ])

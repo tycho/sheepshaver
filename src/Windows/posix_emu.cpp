@@ -1117,3 +1117,51 @@ int my_write( int fd, const void *buffer, unsigned int count )
 	D(bug("write(%ld,%08x,%ld) = %d\n", fd, buffer, count, result));
 	return result;
 }
+
+#ifdef _MSC_VER
+
+#include <float.h>
+
+double
+round(double x)
+{
+	double t;
+
+	if (!_finite(x) || _isnan(x))
+		return (x);
+
+	if (x >= 0.0) {
+		t = ceil(x);
+		if (t - x > 0.5)
+			t -= 1.0;
+		return (t);
+	} else {
+		t = ceil(-x);
+		if (t + x > 0.5)
+			t -= 1.0;
+		return (-t);
+	}
+}
+
+float
+roundf(float x)
+{
+	float t;
+
+	if (!_finite(x) || _isnan(x))
+		return (x);
+
+	if (x >= 0.0) {
+		t = ceilf(x);
+		if (t - x > 0.5)
+			t -= 1.0;
+		return (t);
+	} else {
+		t = ceilf(-x);
+		if (t + x > 0.5)
+			t -= 1.0;
+		return (-t);
+	}
+}
+
+#endif

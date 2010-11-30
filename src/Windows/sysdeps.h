@@ -18,10 +18,10 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SYSDEPS_H
-#define SYSDEPS_H
+#ifndef WIN_SYSDEPS_H
+#define WIN_SYSDEPS_H
 
-#ifndef __STDC__
+#if !defined(__STDC__) && !defined(_MSC_VER)
 #error "Your compiler is not ANSI. Get a real one."
 #endif
 
@@ -32,22 +32,51 @@
 #error "You don't have ANSI C header files."
 #endif
 
+#ifdef _MSC_VER
+#ifdef _M_IX86
+#define __i386__ 1
+#endif
+#ifdef _M_X64
+#define __x86_64__ 1
+#endif
+#endif
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <stdint.h>
+#endif
+#include <inttypes.h>
 #include <string.h>
 #include <time.h>
 #ifdef __WIN32__
+#define NOMINMAX
+#define WINVER 0x0501
+#define _WIN32_WINNT 0x0501
+#include <winsock2.h>
 #include <windows.h>
 #endif
 #include <sys/types.h>
+#include <math.h>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#define O_ACCMODE 0x0003
+typedef size_t ssize_t;
+#include <float.h>
+extern double round(double x);
+extern float roundf(float x);
+extern double trunc(double x);
+extern float truncf(float x);
+#endif
 
 // Define for external components
 #define SHEEPSHAVER 1
 #define POWERPC_ROM 1
+#ifndef EMULATED_PPC
 #define EMULATED_PPC 1
+#endif
 #define CONFIG_WIN32 1
 
 // Use Direct Addressing mode
@@ -74,7 +103,7 @@
 #define PPC_PROFILE_COMPILE_TIME 0
 #define PPC_PROFILE_GENERIC_CALLS 0
 #define KPX_MAX_CPUS 1
-#if ENABLE_DYNGEN
+#if defined(ENABLE_DYNGEN) && !defined(_MSC_VER)
 #define PPC_ENABLE_JIT 1
 #endif
 #if defined(__i386__)
@@ -148,6 +177,21 @@ static inline uint32 do_opt_bswap_32(uint32 x)
 #endif
 #endif
 
+#if defined(_MSC_VER) && 0
+#define opt_bswap_16 _byteswap_ushort
+#define opt_bswap_32 do_opt_bswap_32
+static inline uint32 do_opt_bswap_32(uint32 x)
+{
+	uint32 v;
+	__asm {
+		mov eax, x;
+		bswap eax;
+		mov v, eax;
+	}
+	return v;
+}
+#endif
+
 #ifdef  opt_bswap_16
 #undef  bswap_16
 #define bswap_16 opt_bswap_16
@@ -178,11 +222,15 @@ static inline uint32 generic_bswap_32(uint32 x)
 }
 
 #if defined(__i386__)
+#if defined(_MSC_VER) && 0
+#define opt_bswap_64 _byteswap_uint64
+#else
 #define opt_bswap_64 do_opt_bswap_64
 static inline uint64 do_opt_bswap_64(uint64 x)
 {
   return (bswap_32(x >> 32) | (((uint64)bswap_32((uint32)x)) << 32));
 }
+#endif
 #endif
 
 #ifdef  opt_bswap_64
@@ -315,7 +363,20 @@ static inline int testandset(volatile int *p)
 
 #endif /* __GNUC__ */
 
+#ifdef _MSC_VER
+#define HAVE_TEST_AND_SET 1
+static inline LONG testandset(volatile LONG *p)
+{
+	assert(*p >= 0 && *p <= 1);
+	return InterlockedExchange(p, 1);
+}
+#endif /* _MSC_VER */
+
+#ifdef _MSC_VER
+typedef volatile LONG spinlock_t;
+#else
 typedef volatile int spinlock_t;
+#endif
 
 static const spinlock_t SPIN_LOCK_UNLOCKED = 0;
 
@@ -394,7 +455,9 @@ extern uint32 call_macos7(uint32 tvect, uint32 arg1, uint32 arg2, uint32 arg3, u
 // Misc platform specific definitions
 #ifdef __WIN32__
 typedef int64 loff_t;
-#endif
+#define ATTRIBUTE_PACKED
+#else
 #define ATTRIBUTE_PACKED __attribute__((__packed__))
+#endif
 
 #endif

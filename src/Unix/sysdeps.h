@@ -18,8 +18,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SYSDEPS_H
-#define SYSDEPS_H
+#ifndef UNIX_SYSDEPS_H
+#define UNIX_SYSDEPS_H
+
+#ifdef _WIN32
+
+#include "../Windows/sysdeps.h"
+
+#else
 
 #ifndef __STDC__
 #error "Your compiler is not ANSI. Get a real one."
@@ -486,6 +492,8 @@ extern uint32 call_macos6(uint32 tvect, uint32 arg1, uint32 arg2, uint32 arg3, u
 extern uint32 call_macos7(uint32 tvect, uint32 arg1, uint32 arg2, uint32 arg3, uint32 arg4, uint32 arg5, uint32 arg6, uint32 arg7);
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

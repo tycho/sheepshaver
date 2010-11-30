@@ -98,12 +98,12 @@ protected:
 	uint32 pc() const			{ return regs().pc; }
 	void increment_pc(int o)	{ pc() += o; }
 
-	friend class pc_operand;
-	friend class lr_operand;
-	friend class ctr_operand;
-	friend class cr_operand;
-	template< class field > friend class xer_operand;
-	template< class field > friend class fpscr_operand;
+	friend struct pc_operand;
+	friend struct lr_operand;
+	friend struct ctr_operand;
+	friend struct cr_operand;
+	template< class field > friend struct xer_operand;
+	template< class field > friend struct fpscr_operand;
 
 public:
 
@@ -353,7 +353,7 @@ private:
 
 	// Block lookup table
 	typedef powerpc_block_info block_info;
-	block_cache< block_info, lazy_allocator > my_block_cache;
+	block_cache< block_info, slow_allocator > my_block_cache;
 
 #if PPC_DECODE_CACHE
 	// Decode Cache

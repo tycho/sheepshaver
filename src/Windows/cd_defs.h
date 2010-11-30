@@ -147,5 +147,3 @@ typedef struct _CDROM_SUB_Q_DATA_FORMAT {
 #define IOCTL_CDROM_CURRENT_POSITION 0x01
 #define IOCTL_CDROM_MEDIA_CATALOG    0x02
 #define IOCTL_CDROM_TRACK_ISRC       0x03
-
-#pragma pack()

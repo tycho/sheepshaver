@@ -22,8 +22,8 @@ typedef char *caddr_t;
 typedef int socklen_t;
 typedef unsigned long ioctlsockopt_t;
 
-# include <windows.h>
 # include <winsock2.h>
+# include <windows.h>
 # include <sys/timeb.h>
 # include <iphlpapi.h>
 
@@ -55,7 +55,9 @@ typedef int ioctlsockopt_t;
 # include <stdint.h>
 #endif
 
+#ifndef _MSC_VER
 #include <sys/time.h>
+#endif
 
 #ifdef NEED_TYPEDEFS
 typedef char int8_t;
@@ -212,7 +214,7 @@ int inet_aton _P((const char *cp, struct in_addr *ia));
 
 #if defined __GNUC__
 #define PACKED__ __attribute__ ((packed))
-#elif defined __sgi
+#elif defined __sgi || defined _MSC_VER
 #define PRAGMA_PACK_SUPPORTED 1
 #define PACKED__
 #else

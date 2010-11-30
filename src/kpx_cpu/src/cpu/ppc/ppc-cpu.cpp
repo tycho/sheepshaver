@@ -123,6 +123,7 @@ uint32 powerpc_registers::reserve_data = 0;
 void powerpc_cpu::init_registers()
 {
 	assert((((uintptr)&vr(0)) % 16) == 0);
+	memset(&_regs, 0, sizeof(_regs));
 	for (int i = 0; i < 32; i++) {
 		gpr(i) = 0;
 		fpr(i) = 0;

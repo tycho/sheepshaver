@@ -6,6 +6,9 @@
  */
 
 #define WANT_SYS_IOCTL_H
+#if defined(_WIN32) && defined(__INTEL_COMPILER)
+#include <varargs.h>
+#endif
 #include <stdlib.h>
 #include <slirp.h>
 
@@ -608,7 +611,7 @@ int (*lprint_print) _P((void *, const char *, va_list));
 char *lprint_ptr, *lprint_ptr2, **lprint_arg;
 
 void
-#ifdef __STDC__
+#if defined(__STDC__) || defined(_MSC_VER)
 lprint(const char *format, ...)
 #else
 lprint(va_alist) va_dcl
@@ -616,7 +619,7 @@ lprint(va_alist) va_dcl
 {
 	va_list args;
         
-#ifdef __STDC__
+#if defined(__STDC__) || defined(_MSC_VER)
         va_start(args, format);
 #else
         char *format;

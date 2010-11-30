@@ -58,7 +58,7 @@ extern uint32 ROMBase;			// Base address of Mac ROM
 extern uint8 *ROMBaseHost;		// Base address of Mac ROM (host address space)
 
 // Mac memory access functions
-#if EMULATED_PPC
+#ifdef EMULATED_PPC
 #include "cpu/vm.hpp"
 static inline uint32 ReadMacInt8(uint32 addr) {return vm_read_memory_1(addr);}
 static inline void WriteMacInt8(uint32 addr, uint32 v) {vm_write_memory_1(addr, v);}
@@ -115,7 +115,7 @@ static inline void *Mac2Mac_memcpy(uint32 dest, uint32 src, size_t n) {return me
 struct M68kRegisters;
 extern void Execute68k(uint32, M68kRegisters *r);			// Execute 68k subroutine from EMUL_OP routine, must be ended with RTS
 extern void Execute68kTrap(uint16 trap, M68kRegisters *r);	// Execute 68k A-Trap from EMUL_OP routine
-#if EMULATED_PPC
+#ifdef EMULATED_PPC
 extern void FlushCodeCache(uintptr start, uintptr end);		// Invalidate emulator caches
 #endif
 extern void ExecuteNative(int selector);					// Execute native code from EMUL_OP routine (real mode switch)

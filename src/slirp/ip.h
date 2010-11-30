@@ -77,7 +77,7 @@ typedef u_int32_t n_long;                 /* long as received from the net */
  * Structure of an internet header, naked of options.
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct ip {
@@ -102,7 +102,7 @@ struct ip {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 #define	IP_MAXPACKET	65535		/* maximum packet size */
@@ -148,7 +148,7 @@ struct ip {
  * Time stamp option structure.
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct	ip_timestamp {
@@ -172,7 +172,7 @@ struct	ip_timestamp {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 /* flag bits for ipt_flg */
@@ -221,7 +221,7 @@ typedef caddr32_t ipasfragp_32;
  * Overlay for ip header used by other protocols (tcp, udp).
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct ipovly {
@@ -234,7 +234,7 @@ struct ipovly {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 /*

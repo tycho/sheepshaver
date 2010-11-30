@@ -13,7 +13,7 @@
 #define TFTP_FILENAME_MAX 512
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct tftp_t {
@@ -34,7 +34,7 @@ struct tftp_t {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 void tftp_input(struct mbuf *m);

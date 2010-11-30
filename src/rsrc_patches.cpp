@@ -935,7 +935,7 @@ void PatchNativeResourceManager(void)
 	D(bug(" GetResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_RES_LIB_TOC, ReadMacInt32(tvec + 4));
 	WriteMacInt32(XLM_GET_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -952,7 +952,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" Get1Resource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_GET_1_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_1_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -969,7 +969,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" GetIndResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_GET_IND_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_IND_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -986,7 +986,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" Get1IndResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_GET_1_IND_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_1_IND_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -1003,7 +1003,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" RGetResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_R_GET_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_R_GET_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -1020,7 +1020,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" GetNamedResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_GET_NAMED_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_NAMED_RESOURCE));
 #else
 #ifdef __BEOS__
@@ -1037,7 +1037,7 @@ void PatchNativeResourceManager(void)
 	tvec = ReadMacInt32(upp + 5 * 4);
 	D(bug(" Get1NamedResource() entry %08x, TOC %08x\n", ReadMacInt32(tvec), ReadMacInt32(tvec + 4)));
 	WriteMacInt32(XLM_GET_1_NAMED_RESOURCE, ReadMacInt32(tvec));
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	WriteMacInt32(tvec, NativeFunction(NATIVE_GET_1_NAMED_RESOURCE));
 #else
 #ifdef __BEOS__

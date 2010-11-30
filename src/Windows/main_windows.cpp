@@ -119,6 +119,9 @@ extern void init_emul_ppc(void);
 extern void exit_emul_ppc(void);
 sigsegv_return_t sigsegv_handler(sigsegv_info_t *sip);
 
+#ifdef _MSC_VER
+#include "sigsegv.cpp"
+#endif
 
 /*
  *  Return signal stack base
@@ -387,7 +390,13 @@ int main(int argc, char **argv)
 	// Get my thread ID and jump to ROM boot routine
 	emul_thread = GetCurrentThread();
 	D(bug("Jumping to ROM\n"));
-	jump_to_rom(ROMBase + 0x310000);
+#ifdef _MSC_VER
+	__try {
+#endif
+		jump_to_rom(ROMBase + 0x310000);
+#ifdef _MSC_VER
+	} __except (main_exception_filter(GetExceptionInformation())) {}
+#endif
 	D(bug("Returned from ROM\n"));
 
 quit:
@@ -599,7 +608,7 @@ static void nvram_watchdog(void)
 	}
 }
 
-static DWORD nvram_func(void *arg)
+static DWORD WINAPI nvram_func(void *arg)
 {
 	while (!nvram_thread_cancel) {
 		for (int i=0; i<60 && !nvram_thread_cancel; i++)
@@ -614,7 +623,7 @@ static DWORD nvram_func(void *arg)
  *  60Hz thread (really 60.15Hz)
  */
 
-static DWORD tick_func(void *arg)
+static DWORD WINAPI tick_func(void *arg)
 {
 	int tick_counter = 0;
 	uint64 start = GetTicks_usec();

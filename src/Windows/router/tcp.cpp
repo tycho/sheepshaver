@@ -1333,7 +1333,7 @@ void write_tcp( tcp_t *tcp, int len )
 	- Expire time-waits.
 	- Handle resend timeouts.
 */
-static WINAPI unsigned int tcp_connect_close_thread(void *arg)
+static unsigned int WINAPI tcp_connect_close_thread(void *arg)
 {
 	WSAEVENT wait_handles[MAX_SOCKETS];
 
@@ -1429,7 +1429,7 @@ static WINAPI unsigned int tcp_connect_close_thread(void *arg)
 	return 0;
 }
 
-static WINAPI unsigned int tcp_listen_thread(void *arg)
+static unsigned int WINAPI tcp_listen_thread(void *arg)
 {
 	WSAEVENT wait_handles[MAX_SOCKETS];
 
@@ -1502,8 +1502,8 @@ static WINAPI unsigned int tcp_listen_thread(void *arg)
 static void init_tcp_listen_ports()
 {
 	int32 index = 0;
-	const char *port_str;
-	while ((port_str = PrefsFindString("tcp_port", index++)) != NULL) {
+	char *port_str;
+	while ((port_str = strdup(PrefsFindString("tcp_port", index++))) != NULL) {
 		uint32 iface = 0;
 		char *if_str = strchr(port_str,',');
 		if(if_str) {
@@ -1513,6 +1513,7 @@ static void init_tcp_listen_ports()
 			iface = ntohl( if_net );
 		}
 		uint16 port = (uint16)strtoul( port_str, 0, 0 );
+		free(port_str);
 		if( port ) {
 			uint32 ip = 0;
 			bool once = false;

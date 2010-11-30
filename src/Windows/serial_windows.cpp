@@ -23,6 +23,8 @@
 // TODO: serial i/o threads should have high priority.
 #include "sysdeps.h"
 
+#include <algorithm>
+
 #include <ctype.h>
 #include <process.h>
 
@@ -166,8 +168,8 @@ public:
 private:
 	bool configure(uint16 config);
 	void set_handshake(uint32 s, bool with_dtr);
-	static WINAPI unsigned int input_func(void *arg);
-	static WINAPI unsigned int output_func(void *arg);
+	static unsigned int WINAPI input_func(void *arg);
+	static unsigned int WINAPI output_func(void *arg);
 	static int acknowledge_error(HANDLE h, bool is_read);
 	bool set_timeouts(int bauds, int parity_bits, int stop_bits);
 
@@ -1018,7 +1020,7 @@ static void dump_dirst_bytes( BYTE *buf, int32 actual )
 	if(debug_serial != DB_SERIAL_LOUD) return;
 
 	BYTE b[256];
-	int32 i, bytes = min(actual,sizeof(b)-3);
+	int32 i, bytes = std::min<int32>(actual,sizeof(b)-3);
 
 	for (i=0; i<bytes; i++) {
 		b[i] = isprint(buf[i]) ? buf[i] : '.';

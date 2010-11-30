@@ -255,7 +255,7 @@ void EmulOp(M68kRegisters *r, uint32 pc, int selector)
 			MakeExecutableTvec = FindLibSymbol("\023PrivateInterfaceLib", "\016MakeExecutable");
 			D(bug("MakeExecutable TVECT at %08x\n", MakeExecutableTvec));
 			WriteMacInt32(MakeExecutableTvec, NativeFunction(NATIVE_MAKE_EXECUTABLE));
-#if !EMULATED_PPC
+#if !defined(EMULATED_PPC)
 			WriteMacInt32(MakeExecutableTvec + 4, (uint32)TOC);
 #endif
 

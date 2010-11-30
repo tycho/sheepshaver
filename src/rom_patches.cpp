@@ -1095,7 +1095,7 @@ static bool patch_68k_emul(void)
 	*lp++ = htonl(POWERPC_ILLEGAL);
 	*lp = htonl(POWERPC_ILLEGAL);
 
-#if EMULATED_PPC
+#if defined(EMULATED_PPC)
 	// Install EMUL_RETURN, EXEC_RETURN, EXEC_NATIVE and EMUL_OP opcodes
 	lp = (uint32 *)(ROMBaseHost + 0x380000 + (M68K_EMUL_RETURN << 3));
 	*lp++ = htonl(POWERPC_EMUL_OP);

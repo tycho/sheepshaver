@@ -23,6 +23,10 @@
  *  CPU features
  */
 
+#ifdef _MSC_VER
+#include <float.h>
+#endif
+
 /* XXX: duplicate from cpu/ppc/ppc-dyngen.cpp! */
 static uint32 cpu_features = 0;
 
@@ -36,27 +40,73 @@ enum {
 static unsigned int x86_cpuid(void)
 {
 	int fl1, fl2;
+	const unsigned int id_flag = 0x00200000;
 
 	/* See if we can use cpuid. On AMD64 we always can.  */
-	__asm__ ("pushfl; pushfl; popl %0; movl %0,%1; xorl %2,%0;"
-			 "pushl %0; popfl; pushfl; popl %0; popfl"
-			 : "=&r" (fl1), "=&r" (fl2)
-			 : "i" (0x00200000));
-	if (((fl1 ^ fl2) & 0x00200000) == 0)
+#ifdef _MSC_VER
+	__asm {
+		mov edx, id_flag;
+		pushfd;                         /* Save %eflags to restore later.  */
+		pushfd;                         /* Push second copy, for manipulation.  */
+		pop ebx;                        /* Pop it into post_change.  */
+		mov eax, ebx;                   /* Save copy in pre_change.   */
+		xor ebx, edx;                   /* Tweak bit in post_change.  */
+		push ebx;                       /* Push tweaked copy... */
+		popfd;                          /* ... and pop it into eflags.  */
+		pushfd;                         /* Did it change?  Push new %eflags... */
+		pop ebx;                        /* ... and pop it into post_change.  */
+		popfd;                          /* Restore original value.  */
+		mov fl1, eax;
+		mov fl2, ebx;
+	}
+#else
+	asm ("pushfl\n\t"          /* Save %eflags to restore later.  */
+		 "pushfl\n\t"          /* Push second copy, for manipulation.  */
+		 "popl %1\n\t"         /* Pop it into post_change.  */
+		 "movl %1,%0\n\t"      /* Save copy in pre_change.   */
+		 "xorl %2,%1\n\t"      /* Tweak bit in post_change.  */
+		 "pushl %1\n\t"        /* Push tweaked copy... */
+		 "popfl\n\t"           /* ... and pop it into %eflags.  */
+		 "pushfl\n\t"          /* Did it change?  Push new %eflags... */
+		 "popl %1\n\t"         /* ... and pop it into post_change.  */
+		 "popfl"               /* Restore original value.  */
+		 : "=&r" (fl1), "=&r" (fl2)
+		 : "ir" (id_flag));
+#endif
+	if (((fl1 ^ fl2) & id_flag) == 0)
 		return (0);
 
 	/* Host supports cpuid.  See if cpuid gives capabilities, try
 	   CPUID(0).  Preserve %ebx and %ecx; cpuid insn clobbers these, we
 	   don't need their CPUID values here, and %ebx may be the PIC
 	   register.  */
+#ifdef _MSC_VER
+	__asm {
+		xor ecx, ecx;
+		xor eax, eax;
+		cpuid;
+		mov fl1, eax;
+	}
+#else
 	__asm__ ("push %%ecx ; push %%ebx ; cpuid ; pop %%ebx ; pop %%ecx"
 			 : "=a" (fl1) : "0" (0) : "edx", "cc");
+#endif
 	if (fl1 == 0)
 		return (0);
 
 	/* Invoke CPUID(1), return %edx; caller can examine bits to
 	   determine what's supported.  */
+#ifdef _MSC_VER
+	__asm {
+		xor ecx, ecx;
+		xor ebx, ebx;
+		mov eax, 1;
+		cpuid;
+		mov fl2, edx;
+	}
+#else
 	__asm__ ("push %%ecx ; push %%ebx ; cpuid ; pop %%ebx ; pop %%ecx" : "=d" (fl2) : "a" (1) : "cc");
+#endif
 
 	return fl2;
 }
@@ -79,18 +129,22 @@ static inline int has_cpu_features(int test_cpu_features)
 // Get current rounding direction
 int fegetround(void)
 {
+#ifdef _MSC_VER
+	return _status87() & _MCW_RC;
+#else
 	unsigned short cw;
-
 	__asm__ __volatile__("fnstcw %0" : "=m" (*&cw));
-
 	return cw & 0xc00;
+#endif
 }
 
 // Set the rounding direction represented by ROUND
 int fesetround(int round)
 {
-	unsigned short cw;
-
+#ifdef _MSC_VER
+	_control87(round, _MCW_RC);
+#else
+	uint16 cw;
 	if ((round & ~0xc00) != 0)
 		return 1;
 
@@ -106,6 +160,7 @@ int fesetround(int round)
 		xcw |= round << 3;
 		__asm__ __volatile__("ldmxcsr %0" : : "m" (*&xcw));
 	}
+#endif
 
 	return 0;
 }

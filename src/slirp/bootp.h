@@ -91,7 +91,7 @@
 #define DHCP_OPT_LEN		312
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct bootp_t {
@@ -115,7 +115,7 @@ struct bootp_t {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 void bootp_input(struct mbuf *m);

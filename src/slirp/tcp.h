@@ -54,7 +54,7 @@ extern struct socket *tcp_last_so;
  * Per RFC 793, September, 1981.
  */
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(1)
+#pragma pack(push, 1)
 #endif
 
 struct tcphdr {
@@ -82,7 +82,7 @@ struct tcphdr {
 } PACKED__;
 
 #ifdef PRAGMA_PACK_SUPPORTED
-#pragma pack(0)
+#pragma pack(pop)
 #endif
 
 #include "tcp_var.h"

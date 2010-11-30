@@ -7,14 +7,6 @@ AC_CONFIG_AUX_DIR(../Unix)
 AC_PREREQ(2.52)
 AC_CONFIG_HEADER(config.h)
 
-dnl Canonical system information.
-AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
-
-dnl Options.
-AC_ARG_ENABLE(jit,          [  --enable-jit            enable JIT compiler [default=yes]], [WANT_JIT=$enableval], [WANT_JIT=yes])
-AC_ARG_WITH(gtk,          [  --with-gtk              use GTK user interface [default=yes]], [WANT_GTK=$withval], [WANT_GTK=yes])
-
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -24,6 +16,14 @@ AC_PROG_EGREP
 AC_PROG_LN_S
 AC_PATH_PROG(PERL, [perl])
 AC_CHECK_TOOL(WINDRES, windres)
+
+dnl Canonical system information.
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+dnl Options.
+AC_ARG_ENABLE(jit,          [  --enable-jit            enable JIT compiler [default=yes]], [WANT_JIT=$enableval], [WANT_JIT=yes])
+AC_ARG_WITH(gtk,          [  --with-gtk              use GTK user interface [default=yes]], [WANT_GTK=$withval], [WANT_GTK=yes])
 
 dnl We use GTK+ if possible.
 if [[ "x$WANT_GTK" = "xyes" ]]; then

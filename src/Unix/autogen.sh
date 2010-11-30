@@ -35,7 +35,9 @@ if test "$DIE" -eq 1; then
 fi
 
 if test -z "$ACLOCAL_FLAGS"; then
-    ACLOCAL_FLAGS="-I `aclocal --print-ac-dir` -I m4"
+    ACLOCAL_FLAGS="-I `aclocal --print-ac-dir` -I `dirname $0`/m4"
+else
+    ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I `dirname $0`/m4"
 fi
 
 aclocalinclude="$ACLOCAL_FLAGS"; \
@@ -47,6 +49,9 @@ aclocalinclude="$ACLOCAL_FLAGS"; \
  echo "done.") && \
 (echo $_echo_n " + Running autoconf: $_echo_c"; \
     autoconf; \
+ echo "done.") && \
+(echo $_echo_n " + Running automake: $_echo_c"; \
+    automake -a -c -f; \
  echo "done.") 
 
 rm -f config.cache
@@ -59,3 +64,4 @@ if [ x"$NO_CONFIGURE" = "x" ]; then
     fi
     ./configure "$@"
 fi
+

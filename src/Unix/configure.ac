@@ -40,12 +40,7 @@ AC_ARG_ENABLE(xf86-vidmode, [  --enable-xf86-vidmode   use the XFree86 VidMode e
 AC_ARG_ENABLE(vosf,         [  --enable-vosf           enable video on SEGV signals [default=yes]], [WANT_VOSF=$enableval], [WANT_VOSF=yes])
 AC_ARG_ENABLE(standalone-gui,[  --enable-standalone-gui enable a standalone GUI prefs editor [default=no]], [WANT_STANDALONE_GUI=$enableval], [WANT_STANDALONE_GUI=no])
 AC_ARG_WITH(esd,            [  --with-esd              support ESD for sound under Linux/FreeBSD [default=yes]], [WANT_ESD=$withval], [WANT_ESD=yes])
-AC_ARG_WITH(gtk,            [  --with-gtk              use GTK user interface [default=yes]],
-  [case "$withval" in
-   yes)       WANT_GTK="gtk2";;
-   *)         WANT_GTK="no";;
-   esac],
-  [WANT_GTK="gtk2"])
+AC_ARG_WITH(gtk,            [  --with-gtk              use GTK user interface [default=yes]], [WANT_GTK=$withval], [WANT_GTK=yes])
 AC_ARG_WITH(mon,            [  --with-mon              use mon as debugger [default=yes]], [WANT_MON=$withval], [WANT_MON=yes])
 AC_ARG_WITH(dgcc,           [  --with-dgcc=COMPILER    use C++ COMPILER to compile synthetic opcodes], [DYNGEN_CC=$withval])
 
@@ -290,16 +285,22 @@ fi
 dnl We use GTK+ if possible.
 UISRCS=../dummy/prefs_editor_dummy.cpp
 case "x$WANT_GTK" in
-xgtk2*)
+xyes | xgtk2)
   WANT_GTK=no
   AM_PATH_GTK_2_0(2.16.0, [
     GUI_CFLAGS="$GTK_CFLAGS"
     GUI_LIBS="$GTK_LIBS"
     WANT_GTK=gtk2
   ], [
-    AC_MSG_WARN([Could not find GTK+, disabling user interface.])
+    AC_MSG_WARN([Could not find GTK+ 2.16.0 or later, disabling user interface.])
     WANT_GTK=no
   ])
+  ;;
+xgtk)
+  WANT_GTK=no
+  ;;
+*)
+  WANT_GTK=no
   ;;
 esac
 if [[ "x$WANT_GTK" != "xno" -a "x$WANT_STANDALONE_GUI" = "xno" ]]; then

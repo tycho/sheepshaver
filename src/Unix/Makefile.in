@@ -231,7 +231,7 @@ endif
 
 $(OBJ_DIR)/ppc-execute.o: ppc-execute-impl.cpp
 ppc-execute-impl.cpp: $(kpxsrcdir)/cpu/ppc/ppc-decode.cpp $(GENEXECPL) $(DYNGENDEPS)
-	$(CPP) $(CPPFLAGS) -DGENEXEC $< | $(PERL) $(GENEXECPL) > $@
+	$(CPP) $(CPPFLAGS) $(DEFS) -DGENEXEC $< | $(PERL) $(GENEXECPL) > $@
 
 # PowerPC CPU tester
 TESTSRCS_ = mathlib/ieeefp.cpp mathlib/mathlib.cpp cpu/ppc/ppc-cpu.cpp cpu/ppc/ppc-decode.cpp cpu/ppc/ppc-execute.cpp cpu/ppc/ppc-translate.cpp test/test-powerpc.cpp $(MONSRCS) vm_alloc.cpp utils/utils-cpuinfo.cpp

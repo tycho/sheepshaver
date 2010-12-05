@@ -565,6 +565,13 @@ void *powerpc_cpu::compile_chain_block(block_info *sbi)
 void powerpc_cpu::execute(uint32 entry)
 {
 	bool invalidated_cache = false;
+#ifdef PPC_MIPS_COUNTER
+	unsigned long mips = 0, msnap = 0;
+	double start, snap;
+	struct timeval tm;
+	gettimeofday(&tm, NULL);
+	start = snap = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0);
+#endif
 	pc() = entry;
 #if PPC_EXECUTE_DUMP_STATE
 	const bool dump_state = true;
@@ -678,6 +685,9 @@ void powerpc_cpu::execute(uint32 entry)
 			// Execute all cached blocks
 		  pdi_execute:
 			for (;;) {
+#ifdef PPC_MIPS_COUNTER
+				mips += bi->size;
+#endif
 				const int r = bi->size % 4;
 				di = bi->di + r;
 				int n = (bi->size + 3) / 4;
@@ -690,6 +700,19 @@ void powerpc_cpu::execute(uint32 entry)
 				case 1: di[-1].execute(this, di[-1].opcode);
 					} while (--n > 0);
 				}
+#ifdef PPC_MIPS_COUNTER
+				if (mips - msnap > 2500000) {
+					msnap = mips;
+					gettimeofday(&tm, NULL);
+					double now = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0),
+					       diff = now - snap;
+					if (diff > 1.0) {
+						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
+						mips = msnap = 0;
+						snap = now;
+					}
+				}
+#endif
 
 				if (!spcflags().empty()) {
 					if (!check_spcflags())
@@ -726,6 +749,22 @@ void powerpc_cpu::execute(uint32 entry)
 #endif
 		assert(ii->execute.ptr() != 0);
 		ii->execute(this, opcode);
+
+#ifdef PPC_MIPS_COUNTER
+		mips++;
+
+		if (mips - msnap > 2500000) {
+			msnap = mips;
+			gettimeofday(&tm, NULL);
+			double now = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0),
+			       diff = now - snap;
+			if (diff > 1.0) {
+				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
+				mips = msnap = 0;
+				snap = now;
+			}
+		}
+#endif
 #if PPC_EXECUTE_DUMP_STATE
 		if (dump_state)
 			dump_registers();

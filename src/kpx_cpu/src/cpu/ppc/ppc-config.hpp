@@ -63,6 +63,18 @@
 
 
 /**
+ *	PPC_MIPS_COUNTER
+ *
+ *		Define to 1 to enable the MIPS counter, which is useful for
+ *      performance measurements.
+ **/
+
+#ifndef PPC_MIPS_COUNTER
+#define PPC_MIPS_COUNTER 1
+#endif
+
+
+/**
  *	PPC_ENABLE_JIT
  *
  *		Define to 1 if dynamic translation is used. This requires

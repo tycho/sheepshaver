@@ -124,7 +124,7 @@ inline double sys_time()
 // Configure PowerPC emulator
 #define PPC_REENTRANT_JIT 1
 #define PPC_CHECK_INTERRUPTS 1
-#define PPC_DECODE_CACHE 0
+#define PPC_DECODE_CACHE 1
 #define PPC_FLIGHT_RECORDER 1
 #define PPC_PROFILE_COMPILE_TIME 0
 #define PPC_PROFILE_GENERIC_CALLS 0

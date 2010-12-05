@@ -613,10 +613,10 @@ void powerpc_cpu::execute(uint32 entry)
 		}
 #endif
 #if PPC_DECODE_CACHE
-		block_info *bi = my_block_cache.find(pc());
-		if (bi != NULL)
-			goto pdi_execute;
 		for (;;) {
+			block_info *bi = my_block_cache.find(pc());
+			if (bi != NULL)
+				goto pdi_execute;
 		  pdi_compile:
 #if PPC_PROFILE_COMPILE_TIME
 			compile_count++;

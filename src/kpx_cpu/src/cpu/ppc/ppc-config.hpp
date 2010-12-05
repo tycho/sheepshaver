@@ -58,7 +58,7 @@
  **/
 
 #ifndef PPC_DECODE_CACHE
-#define PPC_DECODE_CACHE 0
+#define PPC_DECODE_CACHE 1
 #endif
 
 

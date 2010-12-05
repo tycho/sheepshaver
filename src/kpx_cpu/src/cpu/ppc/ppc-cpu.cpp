@@ -568,9 +568,7 @@ void powerpc_cpu::execute(uint32 entry)
 #ifdef PPC_MIPS_COUNTER
 	unsigned long mips = 0, msnap = 0;
 	double start, snap;
-	struct timeval tm;
-	gettimeofday(&tm, NULL);
-	start = snap = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0);
+	start = snap = sys_time();
 #endif
 	pc() = entry;
 #if PPC_EXECUTE_DUMP_STATE
@@ -703,8 +701,7 @@ void powerpc_cpu::execute(uint32 entry)
 #ifdef PPC_MIPS_COUNTER
 				if (mips - msnap > 2500000) {
 					msnap = mips;
-					gettimeofday(&tm, NULL);
-					double now = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0),
+					double now = sys_time(),
 					       diff = now - snap;
 					if (diff > 1.0) {
 						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
@@ -755,8 +752,7 @@ void powerpc_cpu::execute(uint32 entry)
 
 		if (mips - msnap > 2500000) {
 			msnap = mips;
-			gettimeofday(&tm, NULL);
-			double now = (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0),
+			double now = sys_time(),
 			       diff = now - snap;
 			if (diff > 1.0) {
 				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);

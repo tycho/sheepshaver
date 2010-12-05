@@ -58,6 +58,7 @@
 #include <windows.h>
 #endif
 #include <sys/types.h>
+#include <sys/timeb.h>
 #include <math.h>
 
 #ifdef _MSC_VER
@@ -70,6 +71,13 @@ extern float roundf(float x);
 extern double trunc(double x);
 extern float truncf(float x);
 #endif
+
+inline double sys_time()
+{
+    struct _timeb tb;
+    _ftime(&tb);
+	return (double)tb.time + ((double)tb.millitm / 1000.0);
+}
 
 // Define for external components
 #define SHEEPSHAVER 1

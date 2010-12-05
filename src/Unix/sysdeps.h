@@ -72,6 +72,13 @@
 # endif
 #endif
 
+inline double sys_time()
+{
+    struct timeval tm;
+    gettimeofday(&tm, NULL);
+	return (double)tm.tv_sec + ((double)tm.tv_usec / 1000000.0);
+}
+
 #ifdef __MACH__
 #include <mach/mach_types.h>
 #endif

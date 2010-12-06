@@ -23,6 +23,8 @@
 
 #include "block-alloc.hpp"
 
+#define GATHER_BLOCK_CACHE_STATISTICS 0
+
 template< class block_info, template<class T> class block_allocator = slow_allocator >
 class block_cache
 {
@@ -40,7 +42,7 @@ private:
 		entry **				prev_p;
 	};
 
-	block_allocator<entry>		allocator;
+	block_allocator<entry>				allocator;
 	entry *						cache_tags[HASH_SIZE];
 	entry *						active;
 	entry *						dormant;
@@ -49,10 +51,21 @@ private:
 		return (addr >> 2) & HASH_MASK;
 	}
 
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+	struct {
+		uint32 searches;
+		uint32 hits;
+		uint32 misses;
+		uint32 faults;
+	} stats;
+#endif
+
 public:
 
 	block_cache();
 	~block_cache();
+
+	void print_statistics();
 
 	block_info *new_blockinfo();
 	void delete_blockinfo(block_info *bi);
@@ -77,6 +90,9 @@ template< class block_info, template<class T> class block_allocator >
 block_cache< block_info, block_allocator >::block_cache()
 	: active(NULL), dormant(NULL)
 {
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+	memset(&stats, 0, sizeof(stats));
+#endif
 	initialize();
 }
 
@@ -169,24 +185,75 @@ inline void block_cache< block_info, block_allocator >::delete_blockinfo(block_i
 }
 
 template< class block_info, template<class T> class block_allocator >
-block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
+inline block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 {
+	const uint32 cl = cacheline(pc);
+
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+	stats.searches++;
+#endif
+
 	// Hit: return immediately
-	entry * bce = cache_tags[cacheline(pc)];
-	if (bce && bce->pc == pc)
+	entry * bce = cache_tags[cl];
+	if (bce && bce->pc == pc) {
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+		stats.hits++;
+#endif
 		return bce;
+	}
 
 	// Miss: perform full list search and move block to front if found
 	while (bce) {
 		bce = bce->next_same_cl;
 		if (bce && bce->pc == pc) {
 			raise_in_cl_list(bce);
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+			stats.misses++;
+#endif
 			return bce;
 		}
 	}
 
 	// Found none, will have to create a new block
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+	stats.faults++;
+#endif
 	return NULL;
+}
+
+template< class block_info, template<class T> class block_allocator >
+void block_cache< block_info, block_allocator >::print_statistics()
+{
+#ifdef GATHER_BLOCK_CACHE_STATISTICS
+	fprintf(stderr, "[Block Cache] Search Statistics: %9u searches, %9u hits, %9u misses, %9u faults\n",
+		stats.searches, stats.hits, stats.misses, stats.faults);
+	double hit_percent = (double)stats.hits / (double)stats.searches * 100.0,
+		miss_percent = (double)stats.misses / (double)stats.searches * 100.0,
+		fault_percent = (double)stats.faults / (double)stats.searches * 100.0;
+	fprintf(stderr, "[Block Cache] In percentages: %3.2lf%% hits, %3.2lf%% misses, %3.2lf%% faults\n",
+		hit_percent, miss_percent, fault_percent);
+	memset(&stats, 0, sizeof(stats));
+#endif
+	uint32 c = 0, min = (uint32)-1, max = 0, average = 0;
+	for(uint32 cl = 0; cl < HASH_SIZE; cl++) {
+		if (cache_tags[cl] != NULL) {
+			c++;
+			entry *e = cache_tags[cl];
+			uint32 ct = 0;
+			while (e) {
+				e = e->next_same_cl;
+				ct++;
+			}
+			if (ct > max) max = ct;
+			if (ct < min) min = ct;
+			average += ct;
+		}
+	}
+	average /= c;
+	fprintf(stderr, "[Block Cache] %u of %u cache lines contain data\n",
+		c, HASH_SIZE);
+	fprintf(stderr, "[Block Cache] Line fill min: %u, max: %u, avg: %u\n",
+		min, max, average);
 }
 
 template< class block_info, template<class T> class block_allocator >

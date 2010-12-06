@@ -568,6 +568,7 @@ void powerpc_cpu::execute(uint32 entry)
 #ifdef PPC_MIPS_COUNTER
 	unsigned long mips = 0, msnap = 0;
 	double start, snap;
+	static uint32 mips_prints = 0;
 	start = snap = sys_time();
 #endif
 	pc() = entry;
@@ -691,8 +692,8 @@ void powerpc_cpu::execute(uint32 entry)
 				int n = (bi->size + 3) / 4;
 				switch (r) {
 				case 0: do {
-						di += 4;
-						di[-4].execute(this, di[-4].opcode);
+				        di += 4;
+				        di[-4].execute(this, di[-4].opcode);
 				case 3: di[-3].execute(this, di[-3].opcode);
 				case 2: di[-2].execute(this, di[-2].opcode);
 				case 1: di[-1].execute(this, di[-1].opcode);
@@ -705,6 +706,11 @@ void powerpc_cpu::execute(uint32 entry)
 					       diff = now - snap;
 					if (diff > 1.0) {
 						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
+						mips_prints++;
+						if (mips_prints == 5) {
+							mips_prints = 0;
+							my_block_cache.print_statistics();
+						}
 						mips = msnap = 0;
 						snap = now;
 					}

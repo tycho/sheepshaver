@@ -73,6 +73,7 @@ public:
 	void initialize();
 	void clear();
 	void clear_range(uintptr start, uintptr end);
+	block_info *fast_find(uintptr pc);
 	block_info *find(uintptr pc);
 
 	void remove_from_cl_list(block_info *bi);
@@ -185,7 +186,18 @@ inline void block_cache< block_info, block_allocator >::delete_blockinfo(block_i
 }
 
 template< class block_info, template<class T> class block_allocator >
-inline block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
+inline block_info *block_cache< block_info, block_allocator >::fast_find(uintptr pc)
+{
+	// Hit: return immediately (that covers more than 95% of the cases)
+	entry * bce = cache_tags[cacheline(pc)];
+	if (bce && bce->pc == pc)
+		return bce;
+
+	return NULL;
+}
+
+template< class block_info, template<class T> class block_allocator >
+block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 {
 	const uint32 cl = cacheline(pc);
 

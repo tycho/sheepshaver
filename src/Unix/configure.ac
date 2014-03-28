@@ -3,6 +3,12 @@ dnl Written in 2002 by Christian Bauer
 
 AC_INIT([SheepShaver], 2.3, [Christian.Bauer@uni-mainz.de], SheepShaver)
 AC_CONFIG_SRCDIR(main_unix.cpp)
+
+dnl Canonical system information.
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE
 AC_PREREQ(2.52)
 AC_CONFIG_HEADER(config.h)
 
@@ -15,10 +21,6 @@ AC_PROG_INSTALL
 AC_PROG_EGREP
 AC_PATH_PROGS(FILE, [file false])
 AC_PATH_PROG(PERL, [perl])
-
-dnl Canonical system information.
-AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
 
 dnl Some systems do not put corefiles in the currect directory, avoid saving
 dnl cores for the configure tests since some are intended to dump core.
@@ -1412,10 +1414,12 @@ if [[ "x$HAVE_GCC30" = "xyes" ]]; then
   CFLAGS="$CFLAGS -fno-strict-aliasing"
   AC_CACHE_CHECK([whether the compiler supports -fno-strict-aliasing],
     ac_cv_gcc_no_strict_aliasing, [
-    AC_TRY_COMPILE([],[],
-      [ac_cv_gcc_no_strict_aliasing=yes; AC_SUBST(SLIRP_CFLAGS, "-fno-strict-aliasing")],
-      [ac_cv_gcc_no_strict_aliasing=no])
+    AC_TRY_COMPILE([],[],[ac_cv_gcc_no_strict_aliasing=yes],[ac_cv_gcc_no_strict_aliasing=no])
   ])
+  if [[ "x$ac_cv_gcc_no_strict_aliasing" = "xyes" ]]; then
+    SLIRP_CFLAGS="$SLIRP_CFLAGS -fno-strict-aliasing"
+    AC_SUBST(SLIRP_CFLAGS)
+  fi
   CFLAGS="$SAVED_CFLAGS"
 fi
 
@@ -1604,10 +1608,11 @@ AC_SUBST(SYSSRCS)
 AC_SUBST(CPUSRCS)
 AC_SUBST(BLESS)
 AC_SUBST(KEYCODES)
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 ../MacOSX/Info.plist
 ])
+AC_OUTPUT
 
 dnl Print summary.
 echo

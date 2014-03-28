@@ -1382,7 +1382,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#if ! (__GNUC__ >= 3)
 dnl Check for ICC.
 AC_MSG_CHECKING(for ICC)
 HAVE_ICC=no
-if $CXX -V -v 2>&1 | grep -q "Intel(R) C++ Compiler"; then
+if $CXX -V -v 2>&1 | grep -q "Intel.*Compiler"; then
   HAVE_ICC=yes
 fi
 AC_MSG_RESULT($HAVE_ICC)

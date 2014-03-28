@@ -2331,6 +2331,9 @@ void patch_relocations(FILE *outfile, const char *name, host_ulong size, host_ul
 			case X86_64_RELOC_UNSIGNED:     // for absolute addresses
 			case X86_64_RELOC_SIGNED:		// for signed 32-bit displacement
 			case X86_64_RELOC_BRANCH:		// a CALL/JMP instruction with 32-bit displacement
+			case X86_64_RELOC_SIGNED_1:     // for signed 32-bit displacement with a -1 addend
+			case X86_64_RELOC_SIGNED_2:     // for signed 32-bit displacement with a -2 addend
+			case X86_64_RELOC_SIGNED_4:     // for signed 32-bit displacement with a -4 addend
 				fprintf(outfile, "    *(uint%d_t *)(code_ptr() + %d) = (int%d_t)((long)%s - (long)(code_ptr() + %d + %d)) + %d;\n", 
 					bitlength, slide, bitlength, final_sym_name, slide, bytecount, sslide);
 				break;

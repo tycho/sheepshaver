@@ -1,3 +1,4 @@
+# Automake
 /aclocal.m4
 /autom4te.cache
 /compile
@@ -8,3 +9,17 @@
 /configure
 /install-sh
 /missing
+
+# Build artifacts
+/Darwin/lowmem
+/Darwin/pagezero
+/Makefile
+/SheepShaver
+/basic-dyngen-ops.hpp
+/config.h
+/config.status
+/dyngen
+/obj
+/ppc-dyngen-ops.hpp
+/ppc-execute-impl.cpp
+/stamp-h1

@@ -1390,7 +1390,6 @@ inline void do_lmw<32>(void)
 {
 	for (uint32 r = PARAM1, ad = T0; r <= 31; r++, ad += 4)
 		CPU->gpr(r) = vm_read_memory_4(ad);
-	dyngen_barrier();
 }
 
 template< int N >
@@ -1412,7 +1411,6 @@ inline void do_stmw<32>(void)
 {
 	for (uint32 r = PARAM1, ad = T0; r <= 31; r++, ad += 4)
 		vm_write_memory_4(ad, CPU->gpr(r));
-	dyngen_barrier();
 }
 
 #define im 32

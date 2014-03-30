@@ -193,10 +193,6 @@ const uintptr VMBaseDiff = 0;
 #ifdef NATMEM_OFFSET
 const uintptr VMBaseDiff = NATMEM_OFFSET;
 #endif
-// Wrap address to 32-bit if we are not using 33-bit addressing space
-#if defined(SHEEPSHAVER) && SIZEOF_VOID_P == 8
-#define vm_wrap_address(ADDR) (uintptr)(uint32)(ADDR)
-#endif
 #endif
 #ifndef vm_wrap_address
 #define vm_wrap_address(ADDR) (ADDR)

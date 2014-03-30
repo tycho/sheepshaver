@@ -455,6 +455,9 @@ static int16 VideoControl(uint32 pb, VidLocals *csSave)
 				return controlErr;
 			uint32 bitmap = ReadMacInt32(bmhandle);
 
+			if (!video_can_change_cursor())
+				return controlErr;
+
 			// Get cursor data even on a screen, to set the right cursor image when switching back to a window.
 			// Hotspot is stale, but will be fixed by the next call to DrawHardwareCursor, which is likely to
 			// occur immediately hereafter.
@@ -468,9 +471,6 @@ static int16 VideoControl(uint32 pb, VidLocals *csSave)
 				changed = true;
 			}
 
-			// Set new cursor image
-			if (!video_can_change_cursor())
-				return controlErr;
 			if (changed)
 				video_set_cursor();
 

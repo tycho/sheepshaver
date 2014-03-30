@@ -1395,7 +1395,11 @@ if [[ "x$HAVE_GCC30" = "xyes" ]]; then
     ac_cv_gcc_no_strict_aliasing, [
     AC_TRY_COMPILE([],[],[ac_cv_gcc_no_strict_aliasing=yes],[ac_cv_gcc_no_strict_aliasing=no])
   ])
-  CFLAGS="$SAVED_CFLAGS"
+  if [[ "x$ac_cv_gcc_no_strict_aliasing" = "xyes" ]]; then
+    CXXFLAGS="$SAVED_CFLAGS -fno-strict-aliasing"
+  else
+    CFLAGS="$SAVED_CFLAGS"
+  fi
 fi
 
 dnl Add -mdynamic-no-pic for MacOS X (XXX icc10 will support MacOS X)

@@ -1181,10 +1181,6 @@ static GList *add_ether_names(void)
 		}
 		close(s);
 	}
-#ifdef HAVE_SLIRP
-	static char s_slirp[] = "slirp";
-	glist = g_list_append(glist, s_slirp);
-#endif
 	if (glist)
 		g_list_sort(glist, gl_str_cmp);
 	else

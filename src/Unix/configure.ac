@@ -650,27 +650,6 @@ AS_IF([test  "x$have_libvhd" = "xyes" ], [
 ])
 
 
-
-
-dnl Is the slirp library supported?
-case "$ac_cv_have_byte_bitfields" in
-yes|"guessing yes")
-  CAN_SLIRP=yes
-  ETHERSRC=ether_unix.cpp
-  ;;
-esac
-if [[ -n "$CAN_SLIRP" ]]; then
-  AC_DEFINE(HAVE_SLIRP, 1, [Define if slirp library is supported])
-  SLIRP_SRCS="\
-    ../slirp/bootp.c     ../slirp/ip_output.c  ../slirp/tcp_input.c  \
-    ../slirp/cksum.c     ../slirp/mbuf.c       ../slirp/tcp_output.c \
-    ../slirp/debug.c     ../slirp/misc.c       ../slirp/tcp_subr.c   \
-    ../slirp/if.c        ../slirp/sbuf.c       ../slirp/tcp_timer.c  \
-    ../slirp/ip_icmp.c   ../slirp/slirp.c      ../slirp/tftp.c       \
-    ../slirp/ip_input.c  ../slirp/socket.c     ../slirp/udp.c"
-fi
-AC_SUBST(SLIRP_SRCS)
-
 dnl SDL overrides
 if [[ "x$WANT_SDL" = "xyes" ]]; then
   AC_DEFINE(USE_SDL, 1, [Define to enble SDL support.])
@@ -1408,7 +1387,7 @@ AC_CACHE_CHECK([the format of compiler generated objects],
   rm -rf conftest*
 ])
 
-dnl Add -fno-strict-aliasing for slirp sources
+dnl Add -fno-strict-aliasing
 if [[ "x$HAVE_GCC30" = "xyes" ]]; then
   SAVED_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -fno-strict-aliasing"
@@ -1416,10 +1395,6 @@ if [[ "x$HAVE_GCC30" = "xyes" ]]; then
     ac_cv_gcc_no_strict_aliasing, [
     AC_TRY_COMPILE([],[],[ac_cv_gcc_no_strict_aliasing=yes],[ac_cv_gcc_no_strict_aliasing=no])
   ])
-  if [[ "x$ac_cv_gcc_no_strict_aliasing" = "xyes" ]]; then
-    SLIRP_CFLAGS="$SLIRP_CFLAGS -fno-strict-aliasing"
-    AC_SUBST(SLIRP_CFLAGS)
-  fi
   CFLAGS="$SAVED_CFLAGS"
 fi
 

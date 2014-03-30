@@ -700,7 +700,7 @@ void powerpc_cpu::execute(uint32 entry)
 					} while (--n > 0);
 				}
 #ifdef PPC_MIPS_COUNTER
-				if ((mips & ((1 << 23) - 1)) == 0) {
+				if ((mips & ((1 << 27) - 1)) == 0) {
 					double now = sys_time(),
 					       diff = now - snap;
 					if (diff > 1.0) {
@@ -755,7 +755,7 @@ void powerpc_cpu::execute(uint32 entry)
 #ifdef PPC_MIPS_COUNTER
 		mips++;
 
-		if ((mips & ((1 << 23) - 1)) == 0) {
+		if ((mips & ((1 << 27) - 1)) == 0) {
 			double now = sys_time(),
 			       diff = now - snap;
 			if (diff > 1.0) {

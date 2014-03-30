@@ -749,7 +749,7 @@ void powerpc_cpu::execute(uint32 entry)
 		if (is_logging())
 			record_step(opcode);
 #endif
-		assert(ii->execute.ptr() != 0);
+		//assert(ii->execute.ptr() != 0);
 		ii->execute(this, opcode);
 
 #ifdef PPC_MIPS_COUNTER

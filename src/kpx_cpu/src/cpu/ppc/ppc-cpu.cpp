@@ -566,7 +566,7 @@ void powerpc_cpu::execute(uint32 entry)
 {
 	bool invalidated_cache = false;
 #ifdef PPC_MIPS_COUNTER
-	unsigned long mips = 0, msnap = 0;
+	unsigned long mips = 0;
 	double start, snap;
 	static uint32 mips_prints = 0;
 	start = snap = sys_time();
@@ -700,18 +700,17 @@ void powerpc_cpu::execute(uint32 entry)
 					} while (--n > 0);
 				}
 #ifdef PPC_MIPS_COUNTER
-				if (mips - msnap > 2500000) {
-					msnap = mips;
+				if ((mips & ((1 << 23) - 1)) == 0) {
 					double now = sys_time(),
 					       diff = now - snap;
 					if (diff > 1.0) {
-						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
+						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1e6, now - start);
 						mips_prints++;
 						if (mips_prints == 5) {
 							mips_prints = 0;
 							my_block_cache.print_statistics();
 						}
-						mips = msnap = 0;
+						mips = 0;
 						snap = now;
 					}
 				}
@@ -756,13 +755,12 @@ void powerpc_cpu::execute(uint32 entry)
 #ifdef PPC_MIPS_COUNTER
 		mips++;
 
-		if (mips - msnap > 2500000) {
-			msnap = mips;
+		if ((mips & ((1 << 23) - 1)) == 0) {
 			double now = sys_time(),
 			       diff = now - snap;
 			if (diff > 1.0) {
-				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1000000.0, now - start);
-				mips = msnap = 0;
+				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1e6, now - start);
+				mips = 0;
 				snap = now;
 			}
 		}

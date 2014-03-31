@@ -565,7 +565,7 @@ void *powerpc_cpu::compile_chain_block(block_info *sbi)
 void powerpc_cpu::execute(uint32 entry)
 {
 	bool invalidated_cache = false;
-#ifdef PPC_MIPS_COUNTER
+#if PPC_MIPS_COUNTER
 	unsigned long mips = 0;
 	double start, snap;
 	static uint32 mips_prints = 0;
@@ -684,7 +684,7 @@ void powerpc_cpu::execute(uint32 entry)
 			// Execute all cached blocks
 		  pdi_execute:
 			for (;;) {
-#ifdef PPC_MIPS_COUNTER
+#if PPC_MIPS_COUNTER
 				mips += bi->size;
 #endif
 				const int r = bi->size % 4;
@@ -699,7 +699,7 @@ void powerpc_cpu::execute(uint32 entry)
 				case 1: di[-1].execute(this, di[-1].opcode);
 					} while (--n > 0);
 				}
-#ifdef PPC_MIPS_COUNTER
+#if PPC_MIPS_COUNTER
 				if ((mips & ((1 << 27) - 1)) == 0) {
 					double now = sys_time(),
 					       diff = now - snap;
@@ -752,7 +752,7 @@ void powerpc_cpu::execute(uint32 entry)
 		//assert(ii->execute.ptr() != 0);
 		ii->execute(this, opcode);
 
-#ifdef PPC_MIPS_COUNTER
+#if PPC_MIPS_COUNTER
 		mips++;
 
 		if ((mips & ((1 << 27) - 1)) == 0) {

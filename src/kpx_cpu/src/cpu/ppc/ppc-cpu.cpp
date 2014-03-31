@@ -566,7 +566,7 @@ void powerpc_cpu::execute(uint32 entry)
 {
 	bool invalidated_cache = false;
 #if PPC_MIPS_COUNTER
-	unsigned long mips = 0;
+	unsigned long retired = 0;
 	double start, snap;
 	static uint32 mips_prints = 0;
 	start = snap = sys_time();
@@ -685,7 +685,7 @@ void powerpc_cpu::execute(uint32 entry)
 		  pdi_execute:
 			for (;;) {
 #if PPC_MIPS_COUNTER
-				mips += bi->size;
+				retired += bi->size;
 #endif
 				const int r = bi->size % 4;
 				di = bi->di + r;
@@ -700,17 +700,18 @@ void powerpc_cpu::execute(uint32 entry)
 					} while (--n > 0);
 				}
 #if PPC_MIPS_COUNTER
-				if ((mips & ((1 << 27) - 1)) == 0) {
+				if (retired > (1 << 27)) {
 					double now = sys_time(),
 					       diff = now - snap;
 					if (diff > 1.0) {
-						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1e6, now - start);
+						double mips = (double)retired / 1e6;
+						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", mips / diff, now - start);
 						mips_prints++;
 						if (mips_prints == 5) {
 							mips_prints = 0;
 							my_block_cache.print_statistics();
 						}
-						mips = 0;
+						retired = 0;
 						snap = now;
 					}
 				}
@@ -753,14 +754,22 @@ void powerpc_cpu::execute(uint32 entry)
 		ii->execute(this, opcode);
 
 #if PPC_MIPS_COUNTER
-		mips++;
+		retired++;
 
-		if ((mips & ((1 << 27) - 1)) == 0) {
+		if ((retired & ((1 << 27) - 1)) == 0) {
 			double now = sys_time(),
 			       diff = now - snap;
 			if (diff > 1.0) {
-				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", ((double)mips / diff) / 1e6, now - start);
-				mips = 0;
+				double mips = (double)retired / 1e6;
+				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", mips / diff, now - start);
+#if PPC_DECODE_CACHE
+				mips_prints++;
+				if (mips_prints == 5) {
+					mips_prints = 0;
+					my_block_cache.print_statistics();
+				}
+#endif
+				retired = 0;
 				snap = now;
 			}
 		}

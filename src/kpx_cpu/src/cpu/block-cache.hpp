@@ -23,7 +23,7 @@
 
 #include "block-alloc.hpp"
 
-#define GATHER_BLOCK_CACHE_STATISTICS 0
+#define GATHER_BLOCK_CACHE_STATISTICS 1
 
 template< class block_info, template<class T> class block_allocator = slow_allocator >
 class block_cache
@@ -51,7 +51,7 @@ private:
 		return (addr >> 2) & HASH_MASK;
 	}
 
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 	struct {
 		uint32 searches;
 		uint32 hits;
@@ -91,7 +91,7 @@ template< class block_info, template<class T> class block_allocator >
 block_cache< block_info, block_allocator >::block_cache()
 	: active(NULL), dormant(NULL)
 {
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 	memset(&stats, 0, sizeof(stats));
 #endif
 	initialize();
@@ -201,14 +201,14 @@ block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 {
 	const uint32 cl = cacheline(pc);
 
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 	stats.searches++;
 #endif
 
 	// Hit: return immediately
 	entry * bce = cache_tags[cl];
 	if (bce && bce->pc == pc) {
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 		stats.hits++;
 #endif
 		return bce;
@@ -219,7 +219,7 @@ block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 		bce = bce->next_same_cl;
 		if (bce && bce->pc == pc) {
 			raise_in_cl_list(bce);
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 			stats.misses++;
 #endif
 			return bce;
@@ -227,7 +227,7 @@ block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 	}
 
 	// Found none, will have to create a new block
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 	stats.faults++;
 #endif
 	return NULL;
@@ -236,7 +236,7 @@ block_info *block_cache< block_info, block_allocator >::find(uintptr pc)
 template< class block_info, template<class T> class block_allocator >
 void block_cache< block_info, block_allocator >::print_statistics()
 {
-#ifdef GATHER_BLOCK_CACHE_STATISTICS
+#if GATHER_BLOCK_CACHE_STATISTICS
 	fprintf(stderr, "[Block Cache] Search Statistics: %9u searches, %9u hits, %9u misses, %9u faults\n",
 		stats.searches, stats.hits, stats.misses, stats.faults);
 	double hit_percent = (double)stats.hits / (double)stats.searches * 100.0,

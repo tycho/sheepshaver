@@ -311,9 +311,20 @@ bool ether_init(void)
 		ether_addr[3] = p >> 16;
 		ether_addr[4] = p >> 8;
 		ether_addr[5] = p;
-	} else
-		ioctl(fd, SIOCGIFADDR, ether_addr);
-	D(bug("Ethernet address %02x %02x %02x %02x %02x %02x\n", ether_addr[0], ether_addr[1], ether_addr[2], ether_addr[3], ether_addr[4], ether_addr[5]));
+	} else {
+		struct ifreq ifr;
+		int r, sock;
+		memset(&ifr, 0, sizeof(ifr));
+		sock = socket(PF_INET, SOCK_DGRAM, 0);
+		strcpy(ifr.ifr_name, net_if_name);
+		r = ioctl(sock, SIOCGIFHWADDR, &ifr);
+		if (r == -1)
+			perror("ioctl(SIOCGIFHWADDR)");
+		else
+			memcpy(ether_addr, ifr.ifr_hwaddr.sa_data, 6);
+		close(sock);
+	}
+	D(bug("Ethernet address %02x:%02x:%02x:%02x:%02x:%02x\n", ether_addr[0], ether_addr[1], ether_addr[2], ether_addr[3], ether_addr[4], ether_addr[5]));
 
 	// Start packet reception thread
 	if (!start_thread())

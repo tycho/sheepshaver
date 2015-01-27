@@ -23,7 +23,7 @@
 
 #include "block-alloc.hpp"
 
-#define GATHER_BLOCK_CACHE_STATISTICS 1
+#define GATHER_BLOCK_CACHE_STATISTICS 0
 
 template< class block_info, template<class T> class block_allocator = slow_allocator >
 class block_cache
@@ -245,7 +245,6 @@ void block_cache< block_info, block_allocator >::print_statistics()
 	fprintf(stderr, "[Block Cache] In percentages: %3.2lf%% hits, %3.2lf%% misses, %3.2lf%% faults\n",
 		hit_percent, miss_percent, fault_percent);
 	memset(&stats, 0, sizeof(stats));
-#endif
 	uint32 c = 0, min = (uint32)-1, max = 0, average = 0;
 	for(uint32 cl = 0; cl < HASH_SIZE; cl++) {
 		if (cache_tags[cl] != NULL) {
@@ -266,6 +265,7 @@ void block_cache< block_info, block_allocator >::print_statistics()
 		c, HASH_SIZE);
 	fprintf(stderr, "[Block Cache] Line fill min: %u, max: %u, avg: %u\n",
 		min, max, average);
+#endif
 }
 
 template< class block_info, template<class T> class block_allocator >

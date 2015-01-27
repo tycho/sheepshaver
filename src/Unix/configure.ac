@@ -1207,6 +1207,8 @@ dnl
 AC_DEFUN([gcc_AC_EXAMINE_OBJECT],
 [AC_LANG_SAVE
 AC_LANG_C
+OLD_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fno-lto"
 dnl Next bit cribbed from AC_TRY_COMPILE.
 cat > conftest.$ac_ext <<EOF
 [#line __oline__ "configure"
@@ -1230,6 +1232,7 @@ ifelse($3, , , else
 )dnl
 fi
 rm -rf conftest*
+CFLAGS=$OLD_CFLAGS
 AC_LANG_RESTORE])
 
 dnl Floating point format probe.

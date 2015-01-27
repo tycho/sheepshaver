@@ -566,7 +566,7 @@ void powerpc_cpu::execute(uint32 entry)
 {
 	bool invalidated_cache = false;
 #if PPC_MIPS_COUNTER
-	unsigned long retired = 0;
+	unsigned long retired = 0, retired_ovf = 0;
 	double start, snap;
 	static uint32 mips_prints = 0;
 	start = snap = sys_time();
@@ -704,15 +704,22 @@ void powerpc_cpu::execute(uint32 entry)
 					double now = sys_time(),
 					       diff = now - snap;
 					if (diff > 1.0) {
-						double mips = (double)retired / 1e6;
+						double mips = (double)(retired + retired_ovf) / 1e6;
 						fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", mips / diff, now - start);
 						mips_prints++;
 						if (mips_prints == 5) {
 							mips_prints = 0;
 							my_block_cache.print_statistics();
 						}
+						retired_ovf = 0;
 						retired = 0;
 						snap = now;
+					} else {
+						// We should wait until we hit the *next* 134,217,728
+						// instructions. It's too soon to print a new MIPS
+						// count.
+						retired_ovf += retired;
+						retired = 0;
 					}
 				}
 #endif
@@ -756,11 +763,11 @@ void powerpc_cpu::execute(uint32 entry)
 #if PPC_MIPS_COUNTER
 		retired++;
 
-		if ((retired & ((1 << 27) - 1)) == 0) {
+		if (retired > (1 << 27)) {
 			double now = sys_time(),
 			       diff = now - snap;
 			if (diff > 1.0) {
-				double mips = (double)retired / 1e6;
+				double mips = (double)(retired + retired_ovf) / 1e6;
 				fprintf(stderr, "%3.5lf MIPS @ %0.3lfs\n", mips / diff, now - start);
 #if PPC_DECODE_CACHE
 				mips_prints++;
@@ -769,8 +776,15 @@ void powerpc_cpu::execute(uint32 entry)
 					my_block_cache.print_statistics();
 				}
 #endif
+				retired_ovf = 0;
 				retired = 0;
 				snap = now;
+			} else {
+				// We should wait until we hit the *next* 134,217,728
+				// instructions. It's too soon to print a new MIPS
+				// count.
+				retired_ovf += retired;
+				retired = 0;
 			}
 		}
 #endif

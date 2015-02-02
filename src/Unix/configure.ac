@@ -61,7 +61,7 @@ AC_ARG_ENABLE(addressing,
    direct)      WANT_ADDRESSING_MODE="direct";;
    direct,0x*)  WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET=`echo "$enableval" | sed -n '/direct,\(0[[xX]][[0-9A-Fa-f]]*\([[UuLl]]\{1,2\}\)\?\)$/s//\1/p'`;;
    esac],
-  [WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET=""]
+  [WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET="0x1000000"]
 )
 
 dnl SDL options.

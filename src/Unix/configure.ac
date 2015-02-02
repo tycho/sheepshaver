@@ -61,7 +61,7 @@ AC_ARG_ENABLE(addressing,
    direct)      WANT_ADDRESSING_MODE="direct";;
    direct,0x*)  WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET=`echo "$enableval" | sed -n '/direct,\(0[[xX]][[0-9A-Fa-f]]*\([[UuLl]]\{1,2\}\)\?\)$/s//\1/p'`;;
    esac],
-  [WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET="0x1000"]
+  [WANT_ADDRESSING_MODE="direct"; NATMEM_OFFSET=""]
 )
 
 dnl SDL options.
@@ -737,6 +737,10 @@ fi
 AC_TRANSLATE_DEFINE(HAVE_MACH_VM, "$have_mach_vm",
   [Define if your system has a working vm_allocate()-based memory allocator.])
 
+if [[ "x$have_mach_vm" = "xyes" ]]; then
+  LDFLAGS="$LDFLAGS -Wl,-pagezero_size,0x3000"
+fi
+
 dnl Check that vm_allocate(), vm_protect() work
 if [[ "x$have_mach_vm" = "xyes" ]]; then
 
@@ -873,19 +877,6 @@ AC_TRANSLATE_DEFINE(HAVE_MMAP_VM, $have_mmap_vm,
   [Define if your system has a working mmap()-based memory allocator.])
 
 fi dnl HAVE_MMAP_VM
-
-dnl Check if we can modify the __PAGEZERO segment for use as Low Memory
-AC_CACHE_CHECK([whether __PAGEZERO can be Low Memory area 0x0000-0x3000],
-  ac_cv_pagezero_hack, [
-  ac_cv_pagezero_hack=no 
-  if AC_TRY_COMMAND([Darwin/testlmem.sh 0x3000]); then
-    ac_cv_pagezero_hack=yes
-    dnl might as well skip the test for mmap-able low memory
-    ac_cv_can_map_lm=no
-  fi
-])
-AC_TRANSLATE_DEFINE(PAGEZERO_HACK, "$ac_cv_pagezero_hack",
-  [Define if the __PAGEZERO Mach-O Low Memory Globals hack works on this system.])
 
 dnl Check if we can mmap 0x3000 bytes from 0x0000
 AC_CACHE_CHECK([whether we can map Low Memory area 0x0000-0x3000],
@@ -1336,7 +1327,6 @@ dnl Platform specific binary postprocessor
 AC_PATH_PROG(BLESS, "true")
 if [[ "x$ac_cv_pagezero_hack" = "xyes" ]]; then
   BLESS=Darwin/lowmem
-  LDFLAGS="$LDFLAGS -pagezero_size 0x3000"
 fi
 
 dnl Check for GCC 2.7 or higher.

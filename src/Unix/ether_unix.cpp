@@ -312,6 +312,7 @@ bool ether_init(void)
 		ether_addr[4] = p >> 8;
 		ether_addr[5] = p;
 	} else {
+#ifdef __linux
 		struct ifreq ifr;
 		int r, sock;
 		memset(&ifr, 0, sizeof(ifr));
@@ -323,6 +324,9 @@ bool ether_init(void)
 		else
 			memcpy(ether_addr, ifr.ifr_hwaddr.sa_data, 6);
 		close(sock);
+#else
+		ioctl(fd, SIOCGIFADDR, &ether_addr);
+#endif
 	}
 	D(bug("Ethernet address %02x:%02x:%02x:%02x:%02x:%02x\n", ether_addr[0], ether_addr[1], ether_addr[2], ether_addr[3], ether_addr[4], ether_addr[5]));
 
